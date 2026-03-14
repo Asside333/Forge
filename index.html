@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>FORGE</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface-2: #1a1a1a;
+    --border: #222222;
+    --border-active: #333333;
+    --text: #e8e8e8;
+    --text-dim: #666666;
+    --text-muted: #444444;
+    --accent: #ff4a1c;
+    --accent-glow: rgba(255, 74, 28, 0.15);
+    --done: #22c55e;
+    --replaced: #eab308;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ═══ MAIN CONTAINER ═══ */
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ═══ HEADER ═══ */
+  .header {
+    padding: 20px 24px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 6px 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover, .nav-btn.active {
+    border-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  /* ═══ SCREENS ═══ */
+  .screen { display: none; flex: 1; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ═══ EMPTY STATE ═══ */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    gap: 32px;
+  }
+
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--text-muted);
+  }
+
+  .empty-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-create {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 16px 40px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-create:active { transform: scale(0.97); }
+
+  /* ═══ ENGAGEMENT SCREEN ═══ */
+  .engagement-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .engagement-block {
+    padding: 32px 24px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .engagement-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .engagement-text {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .engagement-minimal {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    padding: 12px 16px;
+    border-left: 2px solid var(--border-active);
+    background: var(--surface);
+  }
+
+  .engagement-minimal::before {
+    content: 'SEUIL MINIMAL';
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+  }
+
+  .meta-item {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  .meta-value {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ═══ CHRONO ═══ */
+  .chrono-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    gap: 32px;
+    position: relative;
+  }
+
+  .chrono-display {
+    font-family: var(--mono);
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: 4px;
+    color: var(--text);
+    transition: color 0.3s;
+  }
+
+  .chrono-display.running { color: var(--accent); }
+
+  .chrono-total {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .btn-chrono {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid var(--border-active);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-chrono:active { transform: scale(0.95); }
+
+  .btn-chrono.running {
+    border-color: var(--accent);
+    box-shadow: 0 0 40px var(--accent-glow);
+    color: var(--accent);
+  }
+
+  /* ═══ ANCHOR OVERLAY ═══ */
+  .anchor-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 40px;
+    gap: 24px;
+    animation: anchorIn 0.3s ease;
+  }
+
+  .anchor-overlay.visible { display: flex; }
+
+  @keyframes anchorIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .anchor-text {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 2;
+    letter-spacing: 0.5px;
+  }
+
+  .anchor-formula {
+    font-size: 16px;
+    color: var(--accent);
+    font-style: italic;
+    font-family: var(--sans);
+    margin-top: 8px;
+  }
+
+  .anchor-countdown {
+    font-family: var(--mono);
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--text-muted);
+  }
+
+  /* ═══ VERDICT BUTTONS ═══ */
+  .verdict-block {
+    padding: 20px 24px;
+    display: flex;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .btn-verdict {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-verdict:active { transform: scale(0.97); }
+  .btn-verdict.done:hover { border-color: var(--done); color: var(--done); }
+  .btn-verdict.not-done:hover { border-color: var(--text-dim); }
+  .btn-verdict.replaced:hover { border-color: var(--replaced); color: var(--replaced); }
+
+  /* ═══ CREATE FORM ═══ */
+  .form-screen {
+    padding: 32px 24px;
+    gap: 28px;
+  }
+
+  .form-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+  .form-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .form-input, .form-textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    padding: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    resize: none;
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-textarea { min-height: 100px; line-height: 1.6; }
+  .form-textarea.small { min-height: 70px; font-size: 14px; }
+
+  .form-hint {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .btn-submit {
+    flex: 1;
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .btn-cancel {
+    padding: 16px 24px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  /* ═══ REGISTRE ═══ */
+  .registre-screen {
+    padding: 24px;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  .registre-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .registre-empty {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 60px 0;
+  }
+
+  .registre-entry {
+    padding: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .registre-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .registre-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  .registre-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+  }
+
+  .registre-status.done { color: var(--done); border: 1px solid var(--done); }
+  .registre-status.replaced { color: var(--replaced); border: 1px solid var(--replaced); }
+  .registre-status.not-done { color: var(--text-dim); border: 1px solid var(--border); }
+
+  .registre-entry-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .registre-entry-time {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .registre-checkin {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* ═══ STATS (registre profond) ═══ */
+  .stats-block {
+    padding: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 12px;
+  }
+
+  .stat-item { display: flex; flex-direction: column; gap: 4px; }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text);
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ═══ CHECK-IN MODAL ═══ */
+  .checkin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 32px;
+    gap: 24px;
+  }
+
+  .checkin-overlay.visible { display: flex; }
+
+  .checkin-question {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text);
+    text-align: center;
+    letter-spacing: 0.5px;
+    line-height: 1.7;
+  }
+
+  .checkin-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    padding: 16px;
+    width: 100%;
+    max-width: 400px;
+    outline: none;
+    text-align: center;
+  }
+
+  .checkin-input:focus { border-color: var(--accent); }
+
+  .checkin-actions { display: flex; gap: 12px; }
+
+  .checkin-btn {
+    padding: 12px 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-dim);
+  }
+
+  .checkin-btn.submit {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ═══ CONFIRM DIALOG ═══ */
+  .confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 32px;
+    gap: 20px;
+  }
+
+  .confirm-overlay.visible { display: flex; }
+
+  .confirm-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.7;
+    max-width: 320px;
+  }
+
+  .confirm-actions { display: flex; gap: 12px; }
+
+  .confirm-btn {
+    padding: 14px 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-dim);
+  }
+
+  .confirm-btn.danger {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .confirm-btn.ok {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">FORGE</div>
+    <button class="nav-btn" id="navRegistre" onclick="toggleRegistre()">REGISTRE</button>
+  </div>
+
+  <!-- MAIN SCREEN -->
+  <div class="screen active" id="screenMain">
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">⚒</div>
+      <div class="empty-text">
+        Aucun engagement actif.<br>
+        Qu'est-ce que tu as dit que tu ferais ?
+      </div>
+      <button class="btn-create" onclick="showForm()">FORGER</button>
+    </div>
+
+    <!-- Active engagement -->
+    <div class="engagement-view" id="engagementView" style="display:none;">
+      <div class="engagement-block">
+        <div class="engagement-label">ENGAGEMENT ACTIF</div>
+        <div class="engagement-text" id="engText"></div>
+        <div class="engagement-minimal" id="engMinimal" style="display:none;"></div>
+        <div class="meta-row">
+          <div class="meta-item">Depuis <span class="meta-value" id="engDays">—</span></div>
+          <div class="meta-item">Cumulé <span class="meta-value" id="engTotal">0h00</span></div>
+          <div class="meta-item" id="engDeadlineWrap" style="display:none;">Deadline <span class="meta-value" id="engDeadline">—</span></div>
+        </div>
+      </div>
+
+      <div class="chrono-block">
+        <div class="chrono-total" id="chronoLabel">SESSION</div>
+        <div class="chrono-display" id="chronoDisplay">00:00</div>
+        <button class="btn-chrono" id="btnChrono" onclick="toggleChrono()">START</button>
+      </div>
+
+      <div class="verdict-block">
+        <button class="btn-verdict done" onclick="confirmVerdict('done')">FAIT</button>
+        <button class="btn-verdict not-done" onclick="confirmVerdict('not-done')">PAS FAIT</button>
+        <button class="btn-verdict replaced" onclick="confirmVerdict('replaced')">REMPLACÉ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE FORM -->
+  <div class="screen form-screen" id="screenForm">
+    <div class="form-title">NOUVEL ENGAGEMENT</div>
+
+    <div class="form-group">
+      <label class="form-label">Qu'est-ce que tu as dit que tu ferais ?</label>
+      <textarea class="form-textarea" id="formText" placeholder="Une phrase complète. Pas un titre."></textarea>
+      <div class="form-hint">Pas "Ableton". Mais "Ouvrir le projet et refaire les drums du couplet 1".</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Seuil minimal (optionnel)</label>
+      <textarea class="form-textarea small" id="formMinimal" placeholder="La version la plus petite de cet acte"></textarea>
+      <div class="form-hint">Si la montagne est trop haute — quel est le premier pas au sol ?</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Deadline (optionnel)</label>
+      <input class="form-input" id="formDeadline" type="date">
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="hideForm()">ANNULER</button>
+      <button class="btn-submit" onclick="createEngagement()">FORGER</button>
+    </div>
+  </div>
+
+  <!-- REGISTRE -->
+  <div class="screen registre-screen" id="screenRegistre">
+    <div class="registre-title">REGISTRE</div>
+    <div class="stats-block" id="statsBlock"></div>
+    <div id="registreList"></div>
+  </div>
+</div>
+
+<!-- ANCHOR OVERLAY -->
+<div class="anchor-overlay" id="anchorOverlay">
+  <div class="anchor-text">
+    Souffle bas. Épaules lourdes.<br>
+    Mâchoires relâchées. Bassin posé.
+  </div>
+  <div class="anchor-formula">Tu t'autorises à avancer. Ne te retiens plus.</div>
+  <div class="anchor-countdown" id="anchorCount">5</div>
+</div>
+
+<!-- CHECK-IN OVERLAY -->
+<div class="checkin-overlay" id="checkinOverlay">
+  <div class="checkin-question">Qu'est-ce qui a changé<br>concrètement aujourd'hui ?</div>
+  <input class="checkin-input" id="checkinInput" placeholder="Une ligne. Ou rien.">
+  <div class="checkin-actions">
+    <button class="checkin-btn" onclick="closeCheckin()">RIEN</button>
+    <button class="checkin-btn submit" onclick="submitCheckin()">OK</button>
+  </div>
+</div>
+
+<!-- CONFIRM OVERLAY -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-text" id="confirmText"></div>
+  <div class="confirm-actions" id="confirmActions"></div>
+</div>
+
+<script>
+  // ═══ STATE ═══
+  const STORAGE_KEY = 'forge_data';
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return { current: null, history: [], checkins: {} };
+  }
+
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  let state = loadState();
+  let chronoInterval = null;
+  let chronoStart = null;
+  let sessionSeconds = 0;
+
+  // ═══ RENDER ═══
+  function render() {
+    const main = document.getElementById('screenMain');
+    const empty = document.getElementById('emptyState');
+    const eng = document.getElementById('engagementView');
+
+    if (!state.current) {
+      empty.style.display = 'flex';
+      eng.style.display = 'none';
+    } else {
+      empty.style.display = 'none';
+      eng.style.display = 'flex';
+      renderEngagement();
+    }
+  }
+
+  function renderEngagement() {
+    const c = state.current;
+    document.getElementById('engText').textContent = c.text;
+
+    const minEl = document.getElementById('engMinimal');
+    if (c.minimal) {
+      minEl.textContent = c.minimal;
+      minEl.style.display = 'block';
+    } else {
+      minEl.style.display = 'none';
+    }
+
+    // Days since
+    const created = new Date(c.createdAt);
+    const now = new Date();
+    const days = Math.floor((now - created) / 86400000);
+    document.getElementById('engDays').textContent = days === 0 ? "aujourd'hui" : days + 'j';
+
+    // Total time
+    document.getElementById('engTotal').textContent = formatDuration(c.totalSeconds || 0);
+
+    // Deadline
+    const dlWrap = document.getElementById('engDeadlineWrap');
+    if (c.deadline) {
+      dlWrap.style.display = 'inline';
+      const dl = new Date(c.deadline);
+      document.getElementById('engDeadline').textContent = dl.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    } else {
+      dlWrap.style.display = 'none';
+    }
+  }
+
+  function formatDuration(totalSec) {
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    if (h > 0) return h + 'h' + String(m).padStart(2, '0');
+    return m + 'min';
+  }
+
+  function formatChronoDisplay(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  // ═══ CHRONO ═══
+  function toggleChrono() {
+    if (chronoInterval) {
+      stopChrono();
+    } else {
+      startChronoWithAnchor();
+    }
+  }
+
+  function startChronoWithAnchor() {
+    // Show anchor overlay
+    const overlay = document.getElementById('anchorOverlay');
+    overlay.classList.add('visible');
+    let count = 5;
+    document.getElementById('anchorCount').textContent = count;
+
+    const countInterval = setInterval(() => {
+      count--;
+      if (count <= 0) {
+        clearInterval(countInterval);
+        overlay.classList.remove('visible');
+        startChrono();
+      } else {
+        document.getElementById('anchorCount').textContent = count;
+      }
+    }, 1000);
+  }
+
+  function startChrono() {
+    sessionSeconds = 0;
+    chronoStart = Date.now();
+    const btn = document.getElementById('btnChrono');
+    const display = document.getElementById('chronoDisplay');
+    btn.textContent = 'STOP';
+    btn.classList.add('running');
+    display.classList.add('running');
+
+    chronoInterval = setInterval(() => {
+      sessionSeconds = Math.floor((Date.now() - chronoStart) / 1000);
+      display.textContent = formatChronoDisplay(sessionSeconds);
+    }, 1000);
+  }
+
+  function stopChrono() {
+    clearInterval(chronoInterval);
+    chronoInterval = null;
+
+    // Save accumulated time
+    if (state.current && sessionSeconds > 0) {
+      state.current.totalSeconds = (state.current.totalSeconds || 0) + sessionSeconds;
+      saveState(state);
+    }
+
+    const btn = document.getElementById('btnChrono');
+    const display = document.getElementById('chronoDisplay');
+    btn.textContent = 'START';
+    btn.classList.remove('running');
+    display.classList.remove('running');
+    display.textContent = '00:00';
+    sessionSeconds = 0;
+
+    renderEngagement();
+  }
+
+  // ═══ FORM ═══
+  function showForm() {
+    document.getElementById('screenMain').classList.remove('active');
+    document.getElementById('screenRegistre').classList.remove('active');
+    document.getElementById('screenForm').classList.add('active');
+    document.getElementById('formText').value = '';
+    document.getElementById('formMinimal').value = '';
+    document.getElementById('formDeadline').value = '';
+    document.getElementById('formText').focus();
+  }
+
+  function hideForm() {
+    document.getElementById('screenForm').classList.remove('active');
+    document.getElementById('screenMain').classList.add('active');
+  }
+
+  function createEngagement() {
+    const text = document.getElementById('formText').value.trim();
+    if (!text) return;
+
+    const minimal = document.getElementById('formMinimal').value.trim();
+    const deadline = document.getElementById('formDeadline').value || null;
+
+    state.current = {
+      text,
+      minimal: minimal || null,
+      deadline,
+      createdAt: new Date().toISOString(),
+      totalSeconds: 0
+    };
+    saveState(state);
+
+    document.getElementById('screenForm').classList.remove('active');
+    document.getElementById('screenMain').classList.add('active');
+    render();
+  }
+
+  // ═══ VERDICT ═══
+  function confirmVerdict(type) {
+    const labels = { done: 'FAIT', 'not-done': 'PAS FAIT', replaced: 'REMPLACÉ' };
+    const messages = {
+      done: "Cet engagement est terminé ?",
+      'not-done': "Tu le gardes, mais tu actes : pas fait aujourd'hui.",
+      replaced: "Tu abandonnes cet engagement pour un autre. L'historique le verra."
+    };
+
+    const overlay = document.getElementById('confirmOverlay');
+    document.getElementById('confirmText').textContent = messages[type];
+
+    let actionsHTML = '';
+    if (type === 'not-done') {
+      actionsHTML = `
+        <button class="confirm-btn" onclick="closeConfirm()">ANNULER</button>
+        <button class="confirm-btn ok" onclick="executeVerdict('not-done')">CONFIRMER</button>
+      `;
+    } else {
+      actionsHTML = `
+        <button class="confirm-btn" onclick="closeConfirm()">ANNULER</button>
+        <button class="confirm-btn ${type === 'done' ? 'ok' : 'danger'}" onclick="executeVerdict('${type}')">${labels[type]}</button>
+      `;
+    }
+    document.getElementById('confirmActions').innerHTML = actionsHTML;
+    overlay.classList.add('visible');
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('visible');
+  }
+
+  function executeVerdict(type) {
+    closeConfirm();
+
+    // Stop chrono if running
+    if (chronoInterval) stopChrono();
+
+    const entry = {
+      text: state.current.text,
+      minimal: state.current.minimal,
+      status: type,
+      totalSeconds: state.current.totalSeconds || 0,
+      createdAt: state.current.createdAt,
+      closedAt: new Date().toISOString()
+    };
+
+    state.history.unshift(entry);
+
+    if (type === 'not-done') {
+      // Keep engagement but log the "pas fait"
+      // Actually not-done = daily log, engagement stays
+      // Remove last history entry, add as daily log instead
+      state.history.shift();
+      // Just note it in checkins
+      const today = new Date().toISOString().slice(0, 10);
+      state.checkins[today] = (state.checkins[today] || '') + ' [PAS FAIT]';
+      saveState(state);
+      render();
+      return;
+    }
+
+    state.current = null;
+    saveState(state);
+
+    if (type === 'replaced') {
+      showForm();
+    } else {
+      render();
+    }
+  }
+
+  // ═══ REGISTRE ═══
+  function toggleRegistre() {
+    const reg = document.getElementById('screenRegistre');
+    const main = document.getElementById('screenMain');
+    const form = document.getElementById('screenForm');
+    const btn = document.getElementById('navRegistre');
+
+    if (reg.classList.contains('active')) {
+      reg.classList.remove('active');
+      main.classList.add('active');
+      btn.classList.remove('active');
+      btn.textContent = 'REGISTRE';
+    } else {
+      reg.classList.add('active');
+      main.classList.remove('active');
+      form.classList.remove('active');
+      btn.classList.add('active');
+      btn.textContent = 'RETOUR';
+      renderRegistre();
+    }
+  }
+
+  function renderRegistre() {
+    const list = document.getElementById('registreList');
+    const statsEl = document.getElementById('statsBlock');
+
+    // Stats
+    const h = state.history;
+    const done = h.filter(e => e.status === 'done').length;
+    const replaced = h.filter(e => e.status === 'replaced').length;
+    const total = h.length;
+    const totalTime = h.reduce((acc, e) => acc + (e.totalSeconds || 0), 0) + (state.current ? (state.current.totalSeconds || 0) : 0);
+    const ratio = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    statsEl.innerHTML = `
+      <div class="stat-item">
+        <div class="stat-value">${done}</div>
+        <div class="stat-label">FAITS</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${replaced}</div>
+        <div class="stat-label">REMPLACÉS</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${ratio}%</div>
+        <div class="stat-label">RATIO COMPLÉTION</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${formatDuration(totalTime)}</div>
+        <div class="stat-label">TEMPS TOTAL</div>
+      </div>
+    `;
+
+    // List
+    if (h.length === 0) {
+      list.innerHTML = '<div class="registre-empty">Rien encore. Le registre se remplit avec tes actes.</div>';
+      return;
+    }
+
+    list.innerHTML = h.map(entry => {
+      const closed = new Date(entry.closedAt);
+      const dateStr = closed.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+      const checkinDate = entry.closedAt.slice(0, 10);
+      const checkin = state.checkins[checkinDate];
+
+      return `
+        <div class="registre-entry">
+          <div class="registre-entry-header">
+            <div class="registre-date">${dateStr}</div>
+            <div class="registre-status ${entry.status}">${entry.status === 'done' ? 'FAIT' : entry.status === 'replaced' ? 'REMPLACÉ' : 'PAS FAIT'}</div>
+          </div>
+          <div class="registre-entry-text">${escapeHTML(entry.text)}</div>
+          <div class="registre-entry-time">${formatDuration(entry.totalSeconds || 0)} passées</div>
+          ${checkin ? `<div class="registre-checkin">${escapeHTML(checkin)}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ═══ CHECK-IN ═══
+  function showCheckin() {
+    document.getElementById('checkinOverlay').classList.add('visible');
+    document.getElementById('checkinInput').value = '';
+    document.getElementById('checkinInput').focus();
+  }
+
+  function closeCheckin() {
+    document.getElementById('checkinOverlay').classList.remove('visible');
+  }
+
+  function submitCheckin() {
+    const val = document.getElementById('checkinInput').value.trim();
+    if (val) {
+      const today = new Date().toISOString().slice(0, 10);
+      state.checkins[today] = val;
+      saveState(state);
+    }
+    closeCheckin();
+  }
+
+  // Check-in trigger (check once per session if it's evening)
+  function checkEvening() {
+    const hour = new Date().getHours();
+    const today = new Date().toISOString().slice(0, 10);
+    if (hour >= 21 && hour <= 23 && !state.checkins[today] && state.current) {
+      setTimeout(() => showCheckin(), 3000);
+    }
+  }
+
+  // ═══ INIT ═══
+  render();
+  checkEvening();
+</script>
+
+</body>
+</html>
