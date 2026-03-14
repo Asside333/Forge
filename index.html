@@ -14,7 +14,6 @@
   :root {
     --bg: #0a0a0a;
     --surface: #111111;
-    --surface-2: #1a1a1a;
     --border: #222222;
     --border-active: #333333;
     --text: #e8e8e8;
@@ -32,7 +31,6 @@
   body.light {
     --bg: #f5f2ed;
     --surface: #ffffff;
-    --surface-2: #f0ece6;
     --border: #d4cfc7;
     --border-active: #b8b2a8;
     --text: #1a1a1a;
@@ -1119,7 +1117,7 @@
       </div>
 
       <div class="chrono-block" id="chronoBlock">
-        <div class="chrono-total" id="chronoLabel">SESSION</div>
+        <div class="chrono-total">SESSION</div>
         <div class="chrono-display" id="chronoDisplay">00:00</div>
         <div class="chrono-btn-group">
           <button class="btn-resiste" id="btnResiste" onclick="logResistance()">JE<br>RÉSISTE</button>
@@ -1266,16 +1264,21 @@
   }
 
   // ═══ PHRASES ═══
+  let _phrases = null;
+
   function loadPhrases() {
+    if (_phrases) return _phrases;
     try {
       const raw = localStorage.getItem(PHRASES_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) { _phrases = JSON.parse(raw); return _phrases; }
     } catch(e) {}
-    savePhrases(DEFAULT_PHRASES);
-    return [...DEFAULT_PHRASES];
+    _phrases = [...DEFAULT_PHRASES];
+    savePhrases(_phrases);
+    return _phrases;
   }
 
   function savePhrases(phrases) {
+    _phrases = phrases;
     localStorage.setItem(PHRASES_KEY, JSON.stringify(phrases));
   }
 
@@ -1322,7 +1325,8 @@
   let chronoInterval = null;
   let chronoStart = null;
   let sessionSeconds = 0;
-  let nightModeOverridden = false;
+  const nightModeOverridden = () => sessionStorage.getItem('forge_night_override') === '1';
+  const setNightModeOverridden = () => sessionStorage.setItem('forge_night_override', '1');
 
   // ═══ THEME CLAIR / SOMBRE ═══
   let currentTheme = localStorage.getItem('forge_theme') || 'dark';
@@ -1352,13 +1356,13 @@
   // ═══ MODE NUIT ═══
   function checkNightMode() {
     const hour = new Date().getHours();
-    if (hour >= 23 && !state.current && !nightModeOverridden) {
+    if (hour >= 23 && !state.current && !nightModeOverridden()) {
       document.getElementById('nightOverlay').classList.add('visible');
     }
   }
 
   function overrideNightMode() {
-    nightModeOverridden = true;
+    setNightModeOverridden();
     document.getElementById('nightOverlay').classList.remove('visible');
   }
 
@@ -1430,6 +1434,7 @@
   }
 
   function formatDuration(totalSec) {
+    if (!totalSec) return '—';
     const h = Math.floor(totalSec / 3600);
     const m = Math.floor((totalSec % 3600) / 60);
     if (h > 0) return h + 'h' + String(m).padStart(2, '0');
@@ -1612,6 +1617,9 @@
   // Point unique de vérité pour tous les changements d'écran.
   // Gère automatiquement les états des boutons nav.
   function showScreen(id) {
+    // Si on quitte le formulaire sans passer par hideForm(), nettoyer l'interval
+    if (id !== 'screenForm') stopFormPlaceholder();
+
     ['screenMain', 'screenForm', 'screenRegistre', 'screenPhrases'].forEach(s => {
       document.getElementById(s).classList.remove('active');
     });
@@ -1722,16 +1730,16 @@
       resistances: state.current.resistances || []
     };
 
-    state.history.unshift(entry);
-
     if (type === 'not-done') {
-      state.history.shift();
+      // L'engagement reste actif — on note juste le fait dans checkins, sans archiver
       const today = new Date().toISOString().slice(0, 10);
       state.checkins[today] = (state.checkins[today] || '') + ' [PAS FAIT]';
       saveState(state);
       render();
       return;
     }
+
+    state.history.unshift(entry);
 
     state.current = null;
     saveState(state);
@@ -1886,10 +1894,23 @@
   }
 
   function checkEvening() {
-    const hour = new Date().getHours();
-    const today = new Date().toISOString().slice(0, 10);
-    if (hour >= 21 && hour <= 23 && !state.checkins[today] && state.current) {
+    const now = new Date();
+    const hour = now.getHours();
+    const today = now.toISOString().slice(0, 10);
+    if (hour < 21 || hour > 23) return;
+
+    // Overlay check-in (si engagement actif et pas encore fait aujourd'hui)
+    if (!state.checkins[today] && state.current) {
       setTimeout(() => showCheckin(), 3000);
+    }
+
+    // Notification push (une fois par jour)
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const lastCheckinNotif = localStorage.getItem('forge_notif_checkin');
+      if (lastCheckinNotif !== today) {
+        localStorage.setItem('forge_notif_checkin', today);
+        sendNotification('FORGE', "Qu'est-ce qui a changé concrètement aujourd'hui ?");
+      }
     }
   }
 
@@ -1913,17 +1934,8 @@
   function checkNotifications() {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
-    const now = new Date();
-    const hour = now.getHours();
-    const today = now.toISOString().slice(0, 10);
-
-    const lastCheckinNotif = localStorage.getItem('forge_notif_checkin');
-    if (hour >= 21 && lastCheckinNotif !== today) {
-      localStorage.setItem('forge_notif_checkin', today);
-      sendNotification('FORGE', "Qu'est-ce qui a changé concrètement aujourd'hui ?");
-    }
-
     if (state.current) {
+      const today = new Date().toISOString().slice(0, 10);
       const lastStart = parseInt(localStorage.getItem('forge_last_start') || '0');
       const heuresDepuisStart = lastStart > 0 ? (Date.now() - lastStart) / 3600000 : Infinity;
       const lastInactifNotif = localStorage.getItem('forge_notif_inactif');
@@ -1962,7 +1974,7 @@
   registerServiceWorker();
   requestNotificationPermission();
 
-  setInterval(checkNotifications, 60 * 60 * 1000);
+  setInterval(() => { checkEvening(); checkNotifications(); }, 60 * 60 * 1000);
   setTimeout(checkNotifications, 5000);
 </script>
 
