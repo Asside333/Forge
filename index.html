@@ -1608,11 +1608,36 @@
     if (formPlaceholderInterval) { clearInterval(formPlaceholderInterval); formPlaceholderInterval = null; }
   }
 
+  // ═══ NAVIGATION CENTRALISÉE ═══
+  // Point unique de vérité pour tous les changements d'écran.
+  // Gère automatiquement les états des boutons nav.
+  function showScreen(id) {
+    ['screenMain', 'screenForm', 'screenRegistre', 'screenPhrases'].forEach(s => {
+      document.getElementById(s).classList.remove('active');
+    });
+    document.getElementById(id).classList.add('active');
+
+    const btnReg = document.getElementById('navRegistre');
+    const btnPh  = document.getElementById('navPhrases');
+    btnReg.classList.remove('active');
+    btnPh.classList.remove('active');
+
+    if (id === 'screenRegistre') {
+      btnReg.classList.add('active');
+      btnReg.textContent = 'RETOUR';
+      btnPh.textContent  = 'PHRASES';
+    } else if (id === 'screenPhrases') {
+      btnPh.classList.add('active');
+      btnPh.textContent  = 'RETOUR';
+      btnReg.textContent = 'REGISTRE';
+    } else {
+      btnReg.textContent = 'REGISTRE';
+      btnPh.textContent  = 'PHRASES';
+    }
+  }
+
   function showForm() {
-    document.getElementById('screenMain').classList.remove('active');
-    document.getElementById('screenRegistre').classList.remove('active');
-    document.getElementById('screenPhrases').classList.remove('active');
-    document.getElementById('screenForm').classList.add('active');
+    showScreen('screenForm');
     document.getElementById('formText').value = '';
     document.getElementById('formMinimal').value = '';
     document.getElementById('formDeadline').value = '';
@@ -1622,8 +1647,7 @@
 
   function hideForm() {
     stopFormPlaceholder();
-    document.getElementById('screenForm').classList.remove('active');
-    document.getElementById('screenMain').classList.add('active');
+    showScreen('screenMain');
   }
 
   function createEngagement() {
@@ -1645,8 +1669,7 @@
     };
     saveState(state);
 
-    document.getElementById('screenForm').classList.remove('active');
-    document.getElementById('screenMain').classList.add('active');
+    showScreen('screenMain');
     render();
   }
 
@@ -1714,35 +1737,20 @@
     saveState(state);
 
     if (type === 'replaced') {
-      showForm();
+      showForm(); // showForm() appelle showScreen() internement
     } else {
+      showScreen('screenMain');
       render();
     }
   }
 
   // ═══ REGISTRE ═══
   function toggleRegistre() {
-    const reg = document.getElementById('screenRegistre');
-    const main = document.getElementById('screenMain');
-    const form = document.getElementById('screenForm');
-    const ph = document.getElementById('screenPhrases');
-    const btnReg = document.getElementById('navRegistre');
-    const btnPh = document.getElementById('navPhrases');
-
-    if (reg.classList.contains('active')) {
-      reg.classList.remove('active');
-      main.classList.add('active');
-      btnReg.classList.remove('active');
-      btnReg.textContent = 'REGISTRE';
+    const isActive = document.getElementById('screenRegistre').classList.contains('active');
+    if (isActive) {
+      showScreen('screenMain');
     } else {
-      reg.classList.add('active');
-      main.classList.remove('active');
-      form.classList.remove('active');
-      ph.classList.remove('active');
-      btnReg.classList.add('active');
-      btnReg.textContent = 'RETOUR';
-      btnPh.classList.remove('active');
-      btnPh.textContent = 'PHRASES';
+      showScreen('screenRegistre');
       renderRegistre();
     }
   }
@@ -1824,27 +1832,11 @@
 
   // ═══ PHRASES SCREEN ═══
   function togglePhrases() {
-    const ph = document.getElementById('screenPhrases');
-    const main = document.getElementById('screenMain');
-    const form = document.getElementById('screenForm');
-    const reg = document.getElementById('screenRegistre');
-    const btnPh = document.getElementById('navPhrases');
-    const btnReg = document.getElementById('navRegistre');
-
-    if (ph.classList.contains('active')) {
-      ph.classList.remove('active');
-      main.classList.add('active');
-      btnPh.classList.remove('active');
-      btnPh.textContent = 'PHRASES';
+    const isActive = document.getElementById('screenPhrases').classList.contains('active');
+    if (isActive) {
+      showScreen('screenMain');
     } else {
-      ph.classList.add('active');
-      main.classList.remove('active');
-      form.classList.remove('active');
-      reg.classList.remove('active');
-      btnPh.classList.add('active');
-      btnPh.textContent = 'RETOUR';
-      btnReg.classList.remove('active');
-      btnReg.textContent = 'REGISTRE';
+      showScreen('screenPhrases');
       renderPhrases();
     }
   }
