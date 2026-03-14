@@ -1083,7 +1083,7 @@
   <div class="header">
     <div class="logo">FORGE</div>
     <div class="nav-group">
-      <button class="nav-btn" id="navTheme" onclick="toggleTheme()">JOUR</button>
+      <button class="nav-btn" id="navTheme" onclick="toggleTheme()">☀</button>
       <button class="nav-btn" id="navPhrases" onclick="togglePhrases()">PHRASES</button>
       <button class="nav-btn" id="navRegistre" onclick="toggleRegistre()">REGISTRE</button>
     </div>
@@ -1330,10 +1330,10 @@
   function applyTheme(theme) {
     if (theme === 'light') {
       document.body.classList.add('light');
-      document.getElementById('navTheme').textContent = 'NUIT';
+      document.getElementById('navTheme').textContent = '☾';
     } else {
       document.body.classList.remove('light');
-      document.getElementById('navTheme').textContent = 'JOUR';
+      document.getElementById('navTheme').textContent = '☀';
     }
   }
 
