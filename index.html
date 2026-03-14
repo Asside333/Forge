@@ -28,6 +28,18 @@
     --sans: 'Space Grotesk', sans-serif;
   }
 
+  /* ═══ MODE CLAIR ═══ */
+  body.light {
+    --bg: #f5f2ed;
+    --surface: #ffffff;
+    --surface-2: #f0ece6;
+    --border: #d4cfc7;
+    --border-active: #b8b2a8;
+    --text: #1a1a1a;
+    --text-dim: #666666;
+    --text-muted: #999999;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
@@ -37,6 +49,7 @@
     min-height: 100dvh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
   }
 
   /* ═══ MAIN CONTAINER ═══ */
@@ -69,7 +82,7 @@
 
   .nav-group {
     display: flex;
-    gap: 8px;
+    gap: 6px;
   }
 
   .nav-btn {
@@ -77,8 +90,8 @@
     border: 1px solid var(--border);
     color: var(--text-dim);
     font-family: var(--mono);
-    font-size: 11px;
-    padding: 6px 12px;
+    font-size: 10px;
+    padding: 6px 10px;
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.2s;
@@ -87,6 +100,34 @@
   .nav-btn:hover, .nav-btn.active {
     border-color: var(--text-dim);
     color: var(--text);
+  }
+
+  /* ═══ FORGE COUNTER (irréversible) ═══ */
+  .forge-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .forge-count-num {
+    font-family: var(--mono);
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 4px;
+    line-height: 1;
+  }
+
+  .forge-count-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 4px;
   }
 
   /* ═══ SCREENS ═══ */
@@ -122,6 +163,8 @@
     text-align: center;
     line-height: 1.7;
     letter-spacing: 0.5px;
+    transition: opacity 0.3s;
+    min-height: 2.2em;
   }
 
   .btn-create {
@@ -211,15 +254,24 @@
   }
 
   /* ═══ CHRONO ═══ */
+  @keyframes chronoBgGlow {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(255, 74, 28, 0.04); }
+  }
+
   .chrono-block {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 24px;
-    gap: 32px;
+    padding: 32px 24px;
+    gap: 24px;
     position: relative;
+  }
+
+  .chrono-block.running-bg {
+    animation: chronoBgGlow 4s ease-in-out infinite;
   }
 
   .chrono-display {
@@ -240,6 +292,18 @@
     letter-spacing: 1px;
   }
 
+  /* ═══ CHRONO BUTTONS ROW ═══ */
+  .chrono-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  @keyframes startPulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(255,74,28,0); transform: scale(1); }
+    50% { box-shadow: 0 0 20px rgba(255,74,28,0.12); transform: scale(1.018); }
+  }
+
   .btn-chrono {
     width: 120px;
     height: 120px;
@@ -253,21 +317,62 @@
     letter-spacing: 3px;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .btn-chrono:active { transform: scale(0.95); }
+  .btn-chrono:not(.running) {
+    animation: startPulse 3s ease-in-out infinite;
+  }
+
+  .btn-chrono:active { transform: scale(0.95) !important; animation: none; }
 
   .btn-chrono.running {
     border-color: var(--accent);
     box-shadow: 0 0 40px var(--accent-glow);
     color: var(--accent);
+    animation: none;
   }
 
-  /* ═══ BOUTON JUSTE ÇA ═══ */
+  /* JE RÉSISTE */
+  .btn-resiste {
+    background: none;
+    border: 1px solid var(--border-active);
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 10px 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  .btn-resiste:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-resiste:active { transform: scale(0.95); }
+
+  .resist-msg {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-align: center;
+    height: 18px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .resist-msg.visible { opacity: 1; }
+
+  /* JUSTE ÇA */
   .btn-juste-ca {
     background: none;
     border: 1px solid var(--border-active);
@@ -361,6 +466,174 @@
     color: var(--text-muted);
   }
 
+  /* ═══ MORNING OVERLAY ═══ */
+  .morning-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    animation: anchorIn 0.5s ease;
+  }
+
+  .morning-overlay.visible { display: flex; }
+
+  .morning-text {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--text-dim);
+    text-align: center;
+    letter-spacing: 1px;
+    line-height: 2;
+  }
+
+  /* ═══ NIGHT OVERLAY ═══ */
+  .night-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 250;
+    gap: 48px;
+    padding: 40px;
+    animation: anchorIn 0.5s ease;
+  }
+
+  .night-overlay.visible { display: flex; }
+
+  .night-text {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--text-dim);
+    text-align: center;
+    letter-spacing: 0.5px;
+    line-height: 2;
+  }
+
+  .night-override {
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    padding: 8px 0;
+    text-transform: uppercase;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+
+  .night-override:hover { opacity: 1; }
+
+  /* ═══ JOURNAL POST-SESSION ═══ */
+  .journal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 150;
+    padding: 40px 32px;
+    gap: 24px;
+    animation: anchorIn 0.3s ease;
+  }
+
+  .journal-overlay.visible { display: flex; }
+
+  .journal-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .journal-question {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--text-dim);
+    text-align: center;
+    letter-spacing: 0.5px;
+    line-height: 1.7;
+  }
+
+  .journal-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    padding: 16px;
+    width: 100%;
+    max-width: 400px;
+    min-height: 96px;
+    outline: none;
+    resize: none;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+
+  .journal-input:focus { border-color: var(--accent); }
+
+  .journal-actions { display: flex; gap: 12px; }
+
+  .journal-btn {
+    padding: 12px 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-dim);
+    transition: all 0.15s;
+  }
+
+  .journal-btn.submit {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* Journal entries in registre */
+  .registre-journal {
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .registre-journal-item {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .registre-journal-date {
+    color: var(--text-muted);
+    font-style: normal;
+    margin-right: 8px;
+  }
+
+  .registre-resist-count {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
   /* ═══ VERDICT BUTTONS ═══ */
   .verdict-block {
     padding: 20px 24px;
@@ -382,9 +655,10 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
 
+  .btn-verdict:hover { transform: scale(1.02); }
   .btn-verdict:active { transform: scale(0.97); }
   .btn-verdict.done:hover { border-color: var(--done); color: var(--done); }
   .btn-verdict.not-done:hover { border-color: var(--text-dim); }
@@ -553,7 +827,7 @@
     line-height: 1.5;
   }
 
-  /* ═══ STATS (registre profond) ═══ */
+  /* ═══ STATS ═══ */
   .stats-block {
     padding: 20px;
     border: 1px solid var(--border);
@@ -809,6 +1083,7 @@
   <div class="header">
     <div class="logo">FORGE</div>
     <div class="nav-group">
+      <button class="nav-btn" id="navTheme" onclick="toggleTheme()">JOUR</button>
       <button class="nav-btn" id="navPhrases" onclick="togglePhrases()">PHRASES</button>
       <button class="nav-btn" id="navRegistre" onclick="toggleRegistre()">REGISTRE</button>
     </div>
@@ -816,13 +1091,17 @@
 
   <!-- MAIN SCREEN -->
   <div class="screen active" id="screenMain">
+
+    <!-- Compteur irréversible -->
+    <div class="forge-counter">
+      <div class="forge-count-num" id="forgeCountNum">0</div>
+      <div class="forge-count-label">FORGÉS</div>
+    </div>
+
     <!-- Empty state -->
     <div class="empty-state" id="emptyState">
       <div class="empty-icon">⚒</div>
-      <div class="empty-text">
-        Aucun engagement actif.<br>
-        Qu'est-ce que tu as dit que tu ferais ?
-      </div>
+      <div class="empty-text" id="emptyText">Rien en cours. Tu décides.</div>
       <button class="btn-create" onclick="showForm()">FORGER</button>
     </div>
 
@@ -839,10 +1118,14 @@
         </div>
       </div>
 
-      <div class="chrono-block">
+      <div class="chrono-block" id="chronoBlock">
         <div class="chrono-total" id="chronoLabel">SESSION</div>
         <div class="chrono-display" id="chronoDisplay">00:00</div>
-        <button class="btn-chrono" id="btnChrono" onclick="toggleChrono()">START</button>
+        <div class="chrono-btn-group">
+          <button class="btn-resiste" id="btnResiste" onclick="logResistance()">JE<br>RÉSISTE</button>
+          <button class="btn-chrono" id="btnChrono" onclick="toggleChrono()">START</button>
+        </div>
+        <div class="resist-msg" id="resistMsg">Nommé. Maintenant choisis.</div>
         <button class="btn-juste-ca" id="btnJusteCa" onclick="showMinimalOverlay()" style="display:none;">JUSTE ÇA</button>
       </div>
 
@@ -903,7 +1186,18 @@
   </div>
 </div>
 
-<!-- ANCHOR OVERLAY -->
+<!-- MORNING OVERLAY (ancrage d'arrivée) -->
+<div class="morning-overlay" id="morningOverlay">
+  <div class="morning-text">Souffle bas.<br>Tu es là.</div>
+</div>
+
+<!-- NIGHT OVERLAY (mode nuit) -->
+<div class="night-overlay" id="nightOverlay">
+  <div class="night-text">Pas maintenant.<br>Demain matin.</div>
+  <button class="night-override" onclick="overrideNightMode()">CONTINUER QUAND MÊME</button>
+</div>
+
+<!-- ANCHOR OVERLAY (démarrage chrono) -->
 <div class="anchor-overlay" id="anchorOverlay">
   <div class="anchor-text">
     Souffle bas. Épaules lourdes.<br>
@@ -913,9 +1207,20 @@
   <div class="anchor-countdown" id="anchorCount">5</div>
 </div>
 
-<!-- MINIMAL OVERLAY -->
+<!-- MINIMAL OVERLAY (JUSTE ÇA) -->
 <div class="minimal-overlay" id="minimalOverlay" onclick="closeMinimalOverlay()">
   <div class="minimal-overlay-text" id="minimalOverlayText"></div>
+</div>
+
+<!-- JOURNAL OVERLAY (post-session) -->
+<div class="journal-overlay" id="journalOverlay">
+  <div class="journal-label">SESSION TERMINÉE</div>
+  <div class="journal-question">Un mot sur ce que tu viens de faire.</div>
+  <textarea class="journal-input" id="journalInput" placeholder="Une ligne. Ou rien du tout."></textarea>
+  <div class="journal-actions">
+    <button class="journal-btn" onclick="closeJournal()">RIEN</button>
+    <button class="journal-btn submit" onclick="saveJournal()">ENREGISTRER</button>
+  </div>
 </div>
 
 <!-- CHECK-IN OVERLAY -->
@@ -956,8 +1261,8 @@
     return { current: null, history: [], checkins: {} };
   }
 
-  function saveState(state) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  function saveState(s) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
   }
 
   // ═══ PHRASES ═══
@@ -966,7 +1271,6 @@
       const raw = localStorage.getItem(PHRASES_KEY);
       if (raw) return JSON.parse(raw);
     } catch(e) {}
-    // Premier lancement : phrases par défaut
     savePhrases(DEFAULT_PHRASES);
     return [...DEFAULT_PHRASES];
   }
@@ -1018,11 +1322,70 @@
   let chronoInterval = null;
   let chronoStart = null;
   let sessionSeconds = 0;
+  let nightModeOverridden = false;
+
+  // ═══ THEME CLAIR / SOMBRE ═══
+  let currentTheme = localStorage.getItem('forge_theme') || 'dark';
+
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.body.classList.add('light');
+      document.getElementById('navTheme').textContent = 'NUIT';
+    } else {
+      document.body.classList.remove('light');
+      document.getElementById('navTheme').textContent = 'JOUR';
+    }
+  }
+
+  function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('forge_theme', currentTheme);
+    applyTheme(currentTheme);
+  }
+
+  // ═══ COMPTEUR IRRÉVERSIBLE ═══
+  function updateForgeCounter() {
+    const count = state.history.filter(e => e.status === 'done').length;
+    document.getElementById('forgeCountNum').textContent = count;
+  }
+
+  // ═══ MODE NUIT ═══
+  function checkNightMode() {
+    const hour = new Date().getHours();
+    if (hour >= 23 && !state.current && !nightModeOverridden) {
+      document.getElementById('nightOverlay').classList.add('visible');
+    }
+  }
+
+  function overrideNightMode() {
+    nightModeOverridden = true;
+    document.getElementById('nightOverlay').classList.remove('visible');
+  }
+
+  // ═══ ANCRAGE D'ARRIVÉE MATINAL ═══
+  function checkMorningAnchor() {
+    const today = new Date().toISOString().slice(0, 10);
+    const lastOpen = localStorage.getItem('forge_last_open');
+    if (lastOpen !== today) {
+      localStorage.setItem('forge_last_open', today);
+      const overlay = document.getElementById('morningOverlay');
+      overlay.classList.add('visible');
+      setTimeout(() => {
+        overlay.classList.remove('visible');
+        // Vérifier mode nuit après l'ancrage matinal
+        setTimeout(checkNightMode, 200);
+      }, 3000);
+      return true;
+    }
+    return false;
+  }
 
   // ═══ RENDER ═══
   function render() {
     const empty = document.getElementById('emptyState');
     const eng = document.getElementById('engagementView');
+
+    updateForgeCounter();
 
     if (!state.current) {
       empty.style.display = 'flex';
@@ -1049,16 +1412,13 @@
       btnJusteCa.style.display = 'none';
     }
 
-    // Days since
     const created = new Date(c.createdAt);
     const now = new Date();
     const days = Math.floor((now - created) / 86400000);
     document.getElementById('engDays').textContent = days === 0 ? "aujourd'hui" : days + 'j';
 
-    // Total time
     document.getElementById('engTotal').textContent = formatDuration(c.totalSeconds || 0);
 
-    // Deadline
     const dlWrap = document.getElementById('engDeadlineWrap');
     if (c.deadline) {
       dlWrap.style.display = 'inline';
@@ -1084,34 +1444,38 @@
 
   // ═══ HAPTIC ═══
   function vibrate(pattern) {
-    try {
-      if (navigator.vibrate) navigator.vibrate(pattern);
-    } catch(e) {}
+    try { if (navigator.vibrate) navigator.vibrate(pattern); } catch(e) {}
   }
 
   // ═══ SON AU DÉMARRAGE ═══
   function playStartSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-
       osc.connect(gain);
       gain.connect(ctx.destination);
-
-      // Style industriel : sawtooth, fréquence basse ~80hz, decay rapide
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(80, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.18);
-
       gain.gain.setValueAtTime(0.75, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
-
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.3);
       osc.onended = () => ctx.close();
     } catch(e) {}
+  }
+
+  // ═══ BOUTON JE RÉSISTE ═══
+  function logResistance() {
+    if (!state.current) return;
+    if (!state.current.resistances) state.current.resistances = [];
+    state.current.resistances.push(Date.now());
+    saveState(state);
+    vibrate([20, 10, 20]);
+    const msg = document.getElementById('resistMsg');
+    msg.classList.add('visible');
+    setTimeout(() => msg.classList.remove('visible'), 2000);
   }
 
   // ═══ MINIMAL OVERLAY ═══
@@ -1125,11 +1489,32 @@
     document.getElementById('minimalOverlay').classList.remove('visible');
   }
 
+  // ═══ JOURNAL POST-SESSION ═══
+  function showJournalOverlay() {
+    document.getElementById('journalInput').value = '';
+    document.getElementById('journalOverlay').classList.add('visible');
+    setTimeout(() => document.getElementById('journalInput').focus(), 100);
+  }
+
+  function closeJournal() {
+    document.getElementById('journalOverlay').classList.remove('visible');
+  }
+
+  function saveJournal() {
+    const text = document.getElementById('journalInput').value.trim();
+    if (text && state.current) {
+      if (!state.current.journal) state.current.journal = [];
+      state.current.journal.push({ text, date: new Date().toISOString() });
+      saveState(state);
+    }
+    closeJournal();
+  }
+
   // ═══ CHRONO ═══
   function toggleChrono() {
     if (chronoInterval) {
       vibrate([30, 30, 30]);
-      stopChrono();
+      stopChrono(true); // afficher journal après STOP manuel
     } else {
       vibrate(50);
       startChronoWithAnchor();
@@ -1138,7 +1523,6 @@
 
   function startChronoWithAnchor() {
     const overlay = document.getElementById('anchorOverlay');
-    // Phrase aléatoire
     document.getElementById('anchorFormula').textContent = getRandomPhrase();
     overlay.classList.add('visible');
     let count = 5;
@@ -1164,11 +1548,8 @@
     btn.textContent = 'STOP';
     btn.classList.add('running');
     display.classList.add('running');
-
-    // Enregistrer le timestamp du dernier start (pour inactivité)
+    document.getElementById('chronoBlock').classList.add('running-bg');
     localStorage.setItem('forge_last_start', Date.now().toString());
-
-    // Son industriel au démarrage
     playStartSound();
 
     chronoInterval = setInterval(() => {
@@ -1177,7 +1558,7 @@
     }, 1000);
   }
 
-  function stopChrono() {
+  function stopChrono(withJournal = false) {
     clearInterval(chronoInterval);
     chronoInterval = null;
 
@@ -1191,13 +1572,42 @@
     btn.textContent = 'START';
     btn.classList.remove('running');
     display.classList.remove('running');
+    document.getElementById('chronoBlock').classList.remove('running-bg');
     display.textContent = '00:00';
     sessionSeconds = 0;
 
     renderEngagement();
+
+    if (withJournal && state.current) {
+      showJournalOverlay();
+    }
   }
 
   // ═══ FORM ═══
+  const FORM_PLACEHOLDERS = [
+    "Qu'est-ce que tu as dit que tu ferais ?",
+    "Un seul geste. Lequel ?",
+    "Pas besoin que ce soit grand.",
+    "Le plus petit acte réel."
+  ];
+  let formPlaceholderIdx = 0;
+  let formPlaceholderInterval = null;
+
+  function startFormPlaceholder() {
+    const input = document.getElementById('formText');
+    formPlaceholderIdx = 0;
+    input.placeholder = FORM_PLACEHOLDERS[0];
+    if (formPlaceholderInterval) clearInterval(formPlaceholderInterval);
+    formPlaceholderInterval = setInterval(() => {
+      formPlaceholderIdx = (formPlaceholderIdx + 1) % FORM_PLACEHOLDERS.length;
+      input.placeholder = FORM_PLACEHOLDERS[formPlaceholderIdx];
+    }, 3000);
+  }
+
+  function stopFormPlaceholder() {
+    if (formPlaceholderInterval) { clearInterval(formPlaceholderInterval); formPlaceholderInterval = null; }
+  }
+
   function showForm() {
     document.getElementById('screenMain').classList.remove('active');
     document.getElementById('screenRegistre').classList.remove('active');
@@ -1206,10 +1616,12 @@
     document.getElementById('formText').value = '';
     document.getElementById('formMinimal').value = '';
     document.getElementById('formDeadline').value = '';
+    startFormPlaceholder();
     document.getElementById('formText').focus();
   }
 
   function hideForm() {
+    stopFormPlaceholder();
     document.getElementById('screenForm').classList.remove('active');
     document.getElementById('screenMain').classList.add('active');
   }
@@ -1217,6 +1629,7 @@
   function createEngagement() {
     const text = document.getElementById('formText').value.trim();
     if (!text) return;
+    stopFormPlaceholder();
 
     const minimal = document.getElementById('formMinimal').value.trim();
     const deadline = document.getElementById('formDeadline').value || null;
@@ -1226,7 +1639,9 @@
       minimal: minimal || null,
       deadline,
       createdAt: new Date().toISOString(),
-      totalSeconds: 0
+      totalSeconds: 0,
+      journal: [],
+      resistances: []
     };
     saveState(state);
 
@@ -1270,7 +1685,8 @@
   function executeVerdict(type) {
     closeConfirm();
 
-    if (chronoInterval) stopChrono();
+    // Stopper le chrono sans afficher le journal (le verdict prend le relais)
+    if (chronoInterval) stopChrono(false);
 
     const entry = {
       text: state.current.text,
@@ -1278,7 +1694,9 @@
       status: type,
       totalSeconds: state.current.totalSeconds || 0,
       createdAt: state.current.createdAt,
-      closedAt: new Date().toISOString()
+      closedAt: new Date().toISOString(),
+      journal: state.current.journal || [],
+      resistances: state.current.resistances || []
     };
 
     state.history.unshift(entry);
@@ -1337,7 +1755,8 @@
     const done = h.filter(e => e.status === 'done').length;
     const replaced = h.filter(e => e.status === 'replaced').length;
     const total = h.length;
-    const totalTime = h.reduce((acc, e) => acc + (e.totalSeconds || 0), 0) + (state.current ? (state.current.totalSeconds || 0) : 0);
+    const totalTime = h.reduce((acc, e) => acc + (e.totalSeconds || 0), 0)
+      + (state.current ? (state.current.totalSeconds || 0) : 0);
     const ratio = total > 0 ? Math.round((done / total) * 100) : 0;
 
     statsEl.innerHTML = `
@@ -1370,6 +1789,17 @@
       const checkinDate = entry.closedAt.slice(0, 10);
       const checkin = state.checkins[checkinDate];
 
+      const resistCount = (entry.resistances && entry.resistances.length > 0)
+        ? `<div class="registre-resist-count">${entry.resistances.length} résistance${entry.resistances.length > 1 ? 's' : ''} nommée${entry.resistances.length > 1 ? 's' : ''}</div>`
+        : '';
+
+      const journalHtml = (entry.journal && entry.journal.length > 0)
+        ? `<div class="registre-journal">${entry.journal.map(j => {
+            const t = new Date(j.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            return `<div class="registre-journal-item"><span class="registre-journal-date">${t}</span>${escapeHTML(j.text)}</div>`;
+          }).join('')}</div>`
+        : '';
+
       return `
         <div class="registre-entry">
           <div class="registre-entry-header">
@@ -1378,7 +1808,9 @@
           </div>
           <div class="registre-entry-text">${escapeHTML(entry.text)}</div>
           <div class="registre-entry-time">${formatDuration(entry.totalSeconds || 0)} passées</div>
+          ${resistCount}
           ${checkin ? `<div class="registre-checkin">${escapeHTML(checkin)}</div>` : ''}
+          ${journalHtml}
         </div>
       `;
     }).join('');
@@ -1417,6 +1849,29 @@
     }
   }
 
+  // ═══ EMPTY STATE ROTATION ═══
+  const EMPTY_PHRASES = [
+    "Rien en cours. Tu décides.",
+    "Le vide attend un geste.",
+    "Qu'est-ce que tu forges aujourd'hui ?"
+  ];
+  let emptyPhraseIdx = 0;
+  let emptyPhraseTimer = null;
+
+  function startEmptyRotation() {
+    if (emptyPhraseTimer) return;
+    emptyPhraseTimer = setInterval(() => {
+      emptyPhraseIdx = (emptyPhraseIdx + 1) % EMPTY_PHRASES.length;
+      const el = document.getElementById('emptyText');
+      if (!el) return;
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.textContent = EMPTY_PHRASES[emptyPhraseIdx];
+        el.style.opacity = '1';
+      }, 300);
+    }, 4000);
+  }
+
   // ═══ CHECK-IN ═══
   function showCheckin() {
     document.getElementById('checkinOverlay').classList.add('visible');
@@ -1449,7 +1904,6 @@
   // ═══ NOTIFICATIONS ═══
   function sendNotification(title, body) {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
-    // Passer par le service worker si disponible
     if (navigator.serviceWorker && navigator.serviceWorker.controller) {
       navigator.serviceWorker.ready.then(reg => {
         reg.showNotification(title, {
@@ -1471,14 +1925,12 @@
     const hour = now.getHours();
     const today = now.toISOString().slice(0, 10);
 
-    // Check-in du soir à 21h
     const lastCheckinNotif = localStorage.getItem('forge_notif_checkin');
     if (hour >= 21 && lastCheckinNotif !== today) {
       localStorage.setItem('forge_notif_checkin', today);
       sendNotification('FORGE', "Qu'est-ce qui a changé concrètement aujourd'hui ?");
     }
 
-    // Rappel d'inactivité : pas de START depuis 24h + engagement actif
     if (state.current) {
       const lastStart = parseInt(localStorage.getItem('forge_last_start') || '0');
       const heuresDepuisStart = lastStart > 0 ? (Date.now() - lastStart) / 3600000 : Infinity;
@@ -1493,10 +1945,7 @@
   function requestNotificationPermission() {
     if (!('Notification' in window)) return;
     if (Notification.permission === 'default') {
-      // Délai court pour ne pas bloquer le chargement
-      setTimeout(() => {
-        Notification.requestPermission();
-      }, 2000);
+      setTimeout(() => Notification.requestPermission(), 2000);
     }
   }
 
@@ -1509,14 +1958,19 @@
   }
 
   // ═══ INIT ═══
+  applyTheme(currentTheme);
   render();
+
+  // Ancrage matinal → si non affiché, vérifier mode nuit
+  const hadMorning = checkMorningAnchor();
+  if (!hadMorning) checkNightMode();
+
   checkEvening();
+  startEmptyRotation();
   registerServiceWorker();
   requestNotificationPermission();
 
-  // Vérification des notifications toutes les heures
   setInterval(checkNotifications, 60 * 60 * 1000);
-  // Première vérification après 5 secondes (pour laisser le SW s'initialiser)
   setTimeout(checkNotifications, 5000);
 </script>
 
