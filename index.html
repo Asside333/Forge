@@ -67,6 +67,11 @@
     color: var(--accent);
   }
 
+  .nav-group {
+    display: flex;
+    gap: 8px;
+  }
+
   .nav-btn {
     background: none;
     border: 1px solid var(--border);
@@ -262,6 +267,51 @@
     color: var(--accent);
   }
 
+  /* ═══ BOUTON JUSTE ÇA ═══ */
+  .btn-juste-ca {
+    background: none;
+    border: 1px solid var(--border-active);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 10px 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .btn-juste-ca:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-juste-ca:active { transform: scale(0.97); }
+
+  /* ═══ MINIMAL OVERLAY ═══ */
+  .minimal-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 48px 40px;
+    cursor: pointer;
+  }
+
+  .minimal-overlay.visible { display: flex; }
+
+  .minimal-overlay-text {
+    font-family: var(--mono);
+    font-size: clamp(18px, 5vw, 30px);
+    color: #fff;
+    text-align: center;
+    line-height: 1.7;
+    letter-spacing: 1px;
+  }
+
   /* ═══ ANCHOR OVERLAY ═══ */
   .anchor-overlay {
     position: fixed;
@@ -299,6 +349,9 @@
     font-style: italic;
     font-family: var(--sans);
     margin-top: 8px;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 340px;
   }
 
   .anchor-countdown {
@@ -528,6 +581,118 @@
     text-transform: uppercase;
   }
 
+  /* ═══ PHRASES SCREEN ═══ */
+  .phrases-screen {
+    padding: 24px;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  .phrases-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .phrases-subtitle {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+    margin-top: -8px;
+  }
+
+  .phrase-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .phrase-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .phrase-item-text {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .phrase-delete {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 2px;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .phrase-delete:hover { color: var(--accent); }
+
+  .phrase-add-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+
+  .phrase-add-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .phrase-add-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .phrase-add-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .phrase-add-input:focus { border-color: var(--accent); }
+
+  .phrase-add-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .phrase-add-btn:active { transform: scale(0.97); }
+
   /* ═══ CHECK-IN MODAL ═══ */
   .checkin-overlay {
     position: fixed;
@@ -643,7 +808,10 @@
   <!-- HEADER -->
   <div class="header">
     <div class="logo">FORGE</div>
-    <button class="nav-btn" id="navRegistre" onclick="toggleRegistre()">REGISTRE</button>
+    <div class="nav-group">
+      <button class="nav-btn" id="navPhrases" onclick="togglePhrases()">PHRASES</button>
+      <button class="nav-btn" id="navRegistre" onclick="toggleRegistre()">REGISTRE</button>
+    </div>
   </div>
 
   <!-- MAIN SCREEN -->
@@ -675,6 +843,7 @@
         <div class="chrono-total" id="chronoLabel">SESSION</div>
         <div class="chrono-display" id="chronoDisplay">00:00</div>
         <button class="btn-chrono" id="btnChrono" onclick="toggleChrono()">START</button>
+        <button class="btn-juste-ca" id="btnJusteCa" onclick="showMinimalOverlay()" style="display:none;">JUSTE ÇA</button>
       </div>
 
       <div class="verdict-block">
@@ -718,6 +887,20 @@
     <div class="stats-block" id="statsBlock"></div>
     <div id="registreList"></div>
   </div>
+
+  <!-- PHRASES -->
+  <div class="screen phrases-screen" id="screenPhrases">
+    <div class="phrases-title">PHRASES D'ANCRAGE</div>
+    <div class="phrases-subtitle">Piochées aléatoirement à chaque démarrage du chrono.</div>
+    <div class="phrase-list" id="phraseList"></div>
+    <div class="phrase-add-block">
+      <div class="phrase-add-label">Ajouter une phrase</div>
+      <div class="phrase-add-row">
+        <input class="phrase-add-input" id="phraseInput" placeholder="Une phrase qui t'ancre..." onkeydown="if(event.key==='Enter')addPhrase()">
+        <button class="phrase-add-btn" onclick="addPhrase()">+ AJOUTER</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ANCHOR OVERLAY -->
@@ -726,8 +909,13 @@
     Souffle bas. Épaules lourdes.<br>
     Mâchoires relâchées. Bassin posé.
   </div>
-  <div class="anchor-formula">Tu t'autorises à avancer. Ne te retiens plus.</div>
+  <div class="anchor-formula" id="anchorFormula"></div>
   <div class="anchor-countdown" id="anchorCount">5</div>
+</div>
+
+<!-- MINIMAL OVERLAY -->
+<div class="minimal-overlay" id="minimalOverlay" onclick="closeMinimalOverlay()">
+  <div class="minimal-overlay-text" id="minimalOverlayText"></div>
 </div>
 
 <!-- CHECK-IN OVERLAY -->
@@ -749,6 +937,16 @@
 <script>
   // ═══ STATE ═══
   const STORAGE_KEY = 'forge_data';
+  const PHRASES_KEY = 'forge_phrases';
+
+  const DEFAULT_PHRASES = [
+    "Tu t'autorises à avancer. Ne te retiens plus.",
+    "Mon plaisir est innocent. Mon corps est libre.",
+    "Je choisis le geste minuscule irréversible, maintenant.",
+    "Je sors du tribunal. Je reviens au corps.",
+    "La loyauté à Émilie, c'est vivre pleinement — pas me punir.",
+    "Ce que j'ai changé en 18 mois prouve ce que je peux changer en 6."
+  ];
 
   function loadState() {
     try {
@@ -762,6 +960,60 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
+  // ═══ PHRASES ═══
+  function loadPhrases() {
+    try {
+      const raw = localStorage.getItem(PHRASES_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    // Premier lancement : phrases par défaut
+    savePhrases(DEFAULT_PHRASES);
+    return [...DEFAULT_PHRASES];
+  }
+
+  function savePhrases(phrases) {
+    localStorage.setItem(PHRASES_KEY, JSON.stringify(phrases));
+  }
+
+  function getRandomPhrase() {
+    const phrases = loadPhrases();
+    if (!phrases.length) return '';
+    return phrases[Math.floor(Math.random() * phrases.length)];
+  }
+
+  function renderPhrases() {
+    const phrases = loadPhrases();
+    const list = document.getElementById('phraseList');
+    if (!phrases.length) {
+      list.innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--text-muted);padding:20px 0;">Aucune phrase. Ajoute-en une.</div>';
+      return;
+    }
+    list.innerHTML = phrases.map((p, i) => `
+      <div class="phrase-item">
+        <div class="phrase-item-text">${escapeHTML(p)}</div>
+        <button class="phrase-delete" onclick="deletePhrase(${i})" title="Supprimer">×</button>
+      </div>
+    `).join('');
+  }
+
+  function addPhrase() {
+    const input = document.getElementById('phraseInput');
+    const text = input.value.trim();
+    if (!text) return;
+    const phrases = loadPhrases();
+    phrases.push(text);
+    savePhrases(phrases);
+    input.value = '';
+    renderPhrases();
+  }
+
+  function deletePhrase(index) {
+    const phrases = loadPhrases();
+    phrases.splice(index, 1);
+    savePhrases(phrases);
+    renderPhrases();
+  }
+
   let state = loadState();
   let chronoInterval = null;
   let chronoStart = null;
@@ -769,7 +1021,6 @@
 
   // ═══ RENDER ═══
   function render() {
-    const main = document.getElementById('screenMain');
     const empty = document.getElementById('emptyState');
     const eng = document.getElementById('engagementView');
 
@@ -788,11 +1039,14 @@
     document.getElementById('engText').textContent = c.text;
 
     const minEl = document.getElementById('engMinimal');
+    const btnJusteCa = document.getElementById('btnJusteCa');
     if (c.minimal) {
       minEl.textContent = c.minimal;
       minEl.style.display = 'block';
+      btnJusteCa.style.display = 'inline-block';
     } else {
       minEl.style.display = 'none';
+      btnJusteCa.style.display = 'none';
     }
 
     // Days since
@@ -828,18 +1082,64 @@
     return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
 
+  // ═══ HAPTIC ═══
+  function vibrate(pattern) {
+    try {
+      if (navigator.vibrate) navigator.vibrate(pattern);
+    } catch(e) {}
+  }
+
+  // ═══ SON AU DÉMARRAGE ═══
+  function playStartSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      // Style industriel : sawtooth, fréquence basse ~80hz, decay rapide
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(80, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.18);
+
+      gain.gain.setValueAtTime(0.75, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.3);
+      osc.onended = () => ctx.close();
+    } catch(e) {}
+  }
+
+  // ═══ MINIMAL OVERLAY ═══
+  function showMinimalOverlay() {
+    if (!state.current || !state.current.minimal) return;
+    document.getElementById('minimalOverlayText').textContent = state.current.minimal;
+    document.getElementById('minimalOverlay').classList.add('visible');
+  }
+
+  function closeMinimalOverlay() {
+    document.getElementById('minimalOverlay').classList.remove('visible');
+  }
+
   // ═══ CHRONO ═══
   function toggleChrono() {
     if (chronoInterval) {
+      vibrate([30, 30, 30]);
       stopChrono();
     } else {
+      vibrate(50);
       startChronoWithAnchor();
     }
   }
 
   function startChronoWithAnchor() {
-    // Show anchor overlay
     const overlay = document.getElementById('anchorOverlay');
+    // Phrase aléatoire
+    document.getElementById('anchorFormula').textContent = getRandomPhrase();
     overlay.classList.add('visible');
     let count = 5;
     document.getElementById('anchorCount').textContent = count;
@@ -865,6 +1165,12 @@
     btn.classList.add('running');
     display.classList.add('running');
 
+    // Enregistrer le timestamp du dernier start (pour inactivité)
+    localStorage.setItem('forge_last_start', Date.now().toString());
+
+    // Son industriel au démarrage
+    playStartSound();
+
     chronoInterval = setInterval(() => {
       sessionSeconds = Math.floor((Date.now() - chronoStart) / 1000);
       display.textContent = formatChronoDisplay(sessionSeconds);
@@ -875,7 +1181,6 @@
     clearInterval(chronoInterval);
     chronoInterval = null;
 
-    // Save accumulated time
     if (state.current && sessionSeconds > 0) {
       state.current.totalSeconds = (state.current.totalSeconds || 0) + sessionSeconds;
       saveState(state);
@@ -896,6 +1201,7 @@
   function showForm() {
     document.getElementById('screenMain').classList.remove('active');
     document.getElementById('screenRegistre').classList.remove('active');
+    document.getElementById('screenPhrases').classList.remove('active');
     document.getElementById('screenForm').classList.add('active');
     document.getElementById('formText').value = '';
     document.getElementById('formMinimal').value = '';
@@ -964,7 +1270,6 @@
   function executeVerdict(type) {
     closeConfirm();
 
-    // Stop chrono if running
     if (chronoInterval) stopChrono();
 
     const entry = {
@@ -979,11 +1284,7 @@
     state.history.unshift(entry);
 
     if (type === 'not-done') {
-      // Keep engagement but log the "pas fait"
-      // Actually not-done = daily log, engagement stays
-      // Remove last history entry, add as daily log instead
       state.history.shift();
-      // Just note it in checkins
       const today = new Date().toISOString().slice(0, 10);
       state.checkins[today] = (state.checkins[today] || '') + ' [PAS FAIT]';
       saveState(state);
@@ -1006,19 +1307,24 @@
     const reg = document.getElementById('screenRegistre');
     const main = document.getElementById('screenMain');
     const form = document.getElementById('screenForm');
-    const btn = document.getElementById('navRegistre');
+    const ph = document.getElementById('screenPhrases');
+    const btnReg = document.getElementById('navRegistre');
+    const btnPh = document.getElementById('navPhrases');
 
     if (reg.classList.contains('active')) {
       reg.classList.remove('active');
       main.classList.add('active');
-      btn.classList.remove('active');
-      btn.textContent = 'REGISTRE';
+      btnReg.classList.remove('active');
+      btnReg.textContent = 'REGISTRE';
     } else {
       reg.classList.add('active');
       main.classList.remove('active');
       form.classList.remove('active');
-      btn.classList.add('active');
-      btn.textContent = 'RETOUR';
+      ph.classList.remove('active');
+      btnReg.classList.add('active');
+      btnReg.textContent = 'RETOUR';
+      btnPh.classList.remove('active');
+      btnPh.textContent = 'PHRASES';
       renderRegistre();
     }
   }
@@ -1027,7 +1333,6 @@
     const list = document.getElementById('registreList');
     const statsEl = document.getElementById('statsBlock');
 
-    // Stats
     const h = state.history;
     const done = h.filter(e => e.status === 'done').length;
     const replaced = h.filter(e => e.status === 'replaced').length;
@@ -1054,7 +1359,6 @@
       </div>
     `;
 
-    // List
     if (h.length === 0) {
       list.innerHTML = '<div class="registre-empty">Rien encore. Le registre se remplit avec tes actes.</div>';
       return;
@@ -1086,6 +1390,33 @@
     return div.innerHTML;
   }
 
+  // ═══ PHRASES SCREEN ═══
+  function togglePhrases() {
+    const ph = document.getElementById('screenPhrases');
+    const main = document.getElementById('screenMain');
+    const form = document.getElementById('screenForm');
+    const reg = document.getElementById('screenRegistre');
+    const btnPh = document.getElementById('navPhrases');
+    const btnReg = document.getElementById('navRegistre');
+
+    if (ph.classList.contains('active')) {
+      ph.classList.remove('active');
+      main.classList.add('active');
+      btnPh.classList.remove('active');
+      btnPh.textContent = 'PHRASES';
+    } else {
+      ph.classList.add('active');
+      main.classList.remove('active');
+      form.classList.remove('active');
+      reg.classList.remove('active');
+      btnPh.classList.add('active');
+      btnPh.textContent = 'RETOUR';
+      btnReg.classList.remove('active');
+      btnReg.textContent = 'REGISTRE';
+      renderPhrases();
+    }
+  }
+
   // ═══ CHECK-IN ═══
   function showCheckin() {
     document.getElementById('checkinOverlay').classList.add('visible');
@@ -1107,7 +1438,6 @@
     closeCheckin();
   }
 
-  // Check-in trigger (check once per session if it's evening)
   function checkEvening() {
     const hour = new Date().getHours();
     const today = new Date().toISOString().slice(0, 10);
@@ -1116,9 +1446,78 @@
     }
   }
 
+  // ═══ NOTIFICATIONS ═══
+  function sendNotification(title, body) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    // Passer par le service worker si disponible
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification(title, {
+          body,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          vibrate: [100, 50, 100]
+        });
+      }).catch(() => new Notification(title, { body }));
+    } else {
+      new Notification(title, { body });
+    }
+  }
+
+  function checkNotifications() {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    const now = new Date();
+    const hour = now.getHours();
+    const today = now.toISOString().slice(0, 10);
+
+    // Check-in du soir à 21h
+    const lastCheckinNotif = localStorage.getItem('forge_notif_checkin');
+    if (hour >= 21 && lastCheckinNotif !== today) {
+      localStorage.setItem('forge_notif_checkin', today);
+      sendNotification('FORGE', "Qu'est-ce qui a changé concrètement aujourd'hui ?");
+    }
+
+    // Rappel d'inactivité : pas de START depuis 24h + engagement actif
+    if (state.current) {
+      const lastStart = parseInt(localStorage.getItem('forge_last_start') || '0');
+      const heuresDepuisStart = lastStart > 0 ? (Date.now() - lastStart) / 3600000 : Infinity;
+      const lastInactifNotif = localStorage.getItem('forge_notif_inactif');
+      if (heuresDepuisStart >= 24 && lastInactifNotif !== today) {
+        localStorage.setItem('forge_notif_inactif', today);
+        sendNotification('FORGE', "Tu as un engagement en cours. Un geste, même minuscule.");
+      }
+    }
+  }
+
+  function requestNotificationPermission() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'default') {
+      // Délai court pour ne pas bloquer le chargement
+      setTimeout(() => {
+        Notification.requestPermission();
+      }, 2000);
+    }
+  }
+
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => {
+        console.log('[FORGE] Service worker non enregistré :', err);
+      });
+    }
+  }
+
   // ═══ INIT ═══
   render();
   checkEvening();
+  registerServiceWorker();
+  requestNotificationPermission();
+
+  // Vérification des notifications toutes les heures
+  setInterval(checkNotifications, 60 * 60 * 1000);
+  // Première vérification après 5 secondes (pour laisser le SW s'initialiser)
+  setTimeout(checkNotifications, 5000);
 </script>
 
 </body>
